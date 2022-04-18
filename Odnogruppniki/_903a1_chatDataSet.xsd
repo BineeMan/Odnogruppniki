@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="_903a1_chatDataSet" targetNamespace="http://tempuri.org/_903a1_chatDataSet.xsd" xmlns:mstns="http://tempuri.org/_903a1_chatDataSet.xsd" xmlns="http://tempuri.org/_903a1_chatDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="_903a1_chatConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="_903a1_chatConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.Odnogruppniki.Properties.Settings.GlobalReference.Default._903a1_chatConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="ChatTableAdapter" GeneratorDataComponentClassName="ChatTableAdapter" Name="Chat" UserDataComponentName="ChatTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="_903a1_chatConnectionString (Settings)" DbObjectName="[903a1_chat].Odnogruppniki.Chat" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT [Chat Name] FROM Odnogruppniki.Chat</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="Chat Name" DataSetColumn="Chat Name" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="_903a1_chatDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="True" msprop:Generator_DataSetName="_903a1_chatDataSet" msprop:Generator_UserDSName="_903a1_chatDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Chat" msprop:Generator_TableClassName="ChatDataTable" msprop:Generator_TableVarName="tableChat" msprop:Generator_TablePropName="Chat" msprop:Generator_RowDeletingName="ChatRowDeleting" msprop:Generator_RowChangingName="ChatRowChanging" msprop:Generator_RowEvHandlerName="ChatRowChangeEventHandler" msprop:Generator_RowDeletedName="ChatRowDeleted" msprop:Generator_UserTableName="Chat" msprop:Generator_RowChangedName="ChatRowChanged" msprop:Generator_RowEvArgName="ChatRowChangeEvent" msprop:Generator_RowClassName="ChatRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Chat_x0020_Name" msprop:Generator_ColumnVarNameInTable="columnChat_Name" msprop:Generator_ColumnPropNameInRow="Chat_Name" msprop:Generator_ColumnPropNameInTable="Chat_NameColumn" msprop:Generator_UserColumnName="Chat Name" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -13,7 +13,5 @@ namespace Odnogruppniki.Classes
         public static string Password { get; set; }
         public static int IdState { get; set; }
         public static DateTime LastActivityDate { get; set; }
-
     }
-
 }

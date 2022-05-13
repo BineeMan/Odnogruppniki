@@ -55,7 +55,9 @@ namespace Odnogruppniki
             if (IfUserExists(user))
             {
                 GetUserByLogin(textBox_login.Text);
+                UpdateUserStates(1);
                 ChatMain chat_frm = new ChatMain();
+                this.Hide();
                 chat_frm.ShowDialog();
                 this.Close();
             }
@@ -76,6 +78,11 @@ namespace Odnogruppniki
         {
             Forms.RegistrationForm frm_reg = new Forms.RegistrationForm();
             frm_reg.Show();
+        }
+
+        private void LogIn_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            UpdateUserStates(2);
         }
     }
 }

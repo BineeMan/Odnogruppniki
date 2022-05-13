@@ -9,6 +9,8 @@ using System.Text;
 using System.Windows.Forms;
 using static Odnogruppniki.strCon;
 using static Odnogruppniki.Classes.User;
+using static Odnogruppniki.Classes.UserQueries;
+using Odnogruppniki.Forms;
 
 namespace Odnogruppniki
 {
@@ -24,6 +26,8 @@ namespace Odnogruppniki
         private int IdLastMessage = 0;
 
         private int CurrentMessagesAmount = 0;
+
+        private string ChatStatus = "";
 
         private void LoadChats()
         {
@@ -103,7 +107,7 @@ namespace Odnogruppniki
         private void ChatMain_Load(object sender, EventArgs e)
         {
             LoadChats();
-            label2.Text = CurrentMessagesAmount.ToString();
+            LoadChatStatus();
         }
 
         private void dataGridView_ChatList_SelectionChanged(object sender, EventArgs e)
@@ -112,16 +116,15 @@ namespace Odnogruppniki
             IdLastMessage = 0;
             textBox_ChatWindow.Clear();
             AppendMessages();
-            label3.Text = GroupChatId.ToString();
             CurrentMessagesAmount = GetNewMessagesAmount();
-            label2.Text = CurrentMessagesAmount.ToString();
+
+            LoadChatStatus();
         }
 
         private void button_Send_Click(object sender, EventArgs e)
         {
             SendMessage();
             AppendMessages();
-            label2.Text = CurrentMessagesAmount.ToString();
             textBox_Message.Clear();
         }
 
@@ -171,23 +174,26 @@ namespace Odnogruppniki
             {
                 CurrentMessagesAmount = NewMessagesAmount;
                 AppendMessages();
-                label2.Text = CurrentMessagesAmount.ToString();
             }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             CheckNewMessagesAmount();
-            label2.Text = CurrentMessagesAmount.ToString();
+            LoadChatStatus();
         }
 
-        private void LoadLoginCompanion()
+        private void LoadChatStatus()
         {
-            string SqlExpression = "SELECT Chat.[ID Group Chat], [ID Chat Type], [Chat Name] " +
-                "FROM Odnogruppniki.Chat" +
+            string SqlExpression = "SELECT [Login], Chat.[ID Group Chat], [Chat Name], [Last Activity Date], [States].[Name], [States].[ID State], [ID Chat Type]" +
+                " FROM Odnogruppniki.[Chat Members]" +
+                " JOIN Odnogruppniki.[User]" +
+                " ON Odnogruppniki.[User].[ID] = Odnogruppniki.[Chat Members].[ID Member]" +
+                " JOIN Odnogruppniki.[States]" +
+                " ON Odnogruppniki.[User].[ID State] = Odnogruppniki.[States].[ID State]" +
+                " JOIN Odnogruppniki.Chat" +
+                " ON Odnogruppniki.Chat.[ID Group Chat] = Odnogruppniki.[Chat Members].[ID Group Chat]" +
                 " WHERE Chat.[ID Group Chat] = " + GroupChatId;
-            string ChatName = "";
-            int ChatType = 1;
             using (SqlConnection conn = new SqlConnection(STR_CONN))
             {
                 conn.Open();
@@ -195,36 +201,51 @@ namespace Odnogruppniki
                 SqlDataReader DataReader = command.ExecuteReader();
                 while (DataReader.Read())
                 {
-                    ChatName = DataReader["Chat Name"].ToString();
-                    ChatType = (int)DataReader["ID Chat Type"];
-                }
-            }
-            if (ChatType == 2)
-                return ChatName; 
-            else
-            {
-                string LoginCompanion = "";
-                SqlExpression = "SELECT [ID Member], [Login], [ID Group Chat] " +
-                    "FROM Odnogruppniki.[Chat Members] " +
-                    "JOIN Odnogruppniki.[User] " +
-                    "ON Odnogruppniki.[User].[ID] = Odnogruppniki.[Chat Members].[ID Member] " +
-                    "WHERE[ID Group Chat] = " + GroupChatId;
-                using (SqlConnection conn = new SqlConnection(STR_CONN))
-                {
-                    conn.Open();
-                    SqlCommand command = new SqlCommand(SqlExpression, conn);
-                    SqlDataReader DataReader = command.ExecuteReader();
-                    while (DataReader.Read())
+                    string Login = DataReader["Login"].ToString();
+                    string ChatName = DataReader["Chat Name"].ToString();
+                    string Date = DataReader["Last Activity Date"].ToString();
+                    string StateName = DataReader["Name"].ToString();
+                    int IdState = (int)DataReader["ID State"];
+                    int IdChatType = (int)DataReader["ID Chat Type"];
+
+                    if (IdChatType == 2)
                     {
-                        LoginCompanion = DataReader["Login"].ToString();
-                        if (!LoginCompanion.Equals(User.Login))
+                        label_Nickname.Text = ChatName;
+                        label_ConpanionStatus.Text = "";
+                        break;
+                    }
+
+                    if (!Login.Equals(User.Login))
+                    {
+                        label_Nickname.Text = Login;
+                        if (IdState == 1)
+                            label_ConpanionStatus.Text = StateName;
+                        else if (IdState == 2)
                         {
-                            return LoginCompanion;
+                            label_ConpanionStatus.Text = "Был в сети " + Date;
+                            label_ConpanionStatus.TextAlign = ContentAlignment.TopCenter;
                         }
+                        break;
                     }
                 }
+
             }
-            return "Error! Chat name do not exist!";
+
+        }
+
+        private void button_LogOut_Click(object sender, EventArgs e)
+        {
+            LogIn login_frm = new LogIn();
+            this.Hide();
+            login_frm.ShowDialog();
+            this.Close();
+            UpdateUserStates(2);
+        }
+
+        private void button_AddUser_Click(object sender, EventArgs e)
+        {
+            AddUserForm add_frm = new AddUserForm();
+            add_frm.ShowDialog();
         }
     }
 }

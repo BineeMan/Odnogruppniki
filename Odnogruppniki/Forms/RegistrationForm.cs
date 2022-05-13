@@ -19,10 +19,8 @@ namespace Odnogruppniki.Forms
 
         private void RegistrationButton_Click_1(object sender, EventArgs e)
         {
-            //User user = new User();
             User.Login = textBox_login.Text;
             User.Password = textBox_passwd1.Text;
-            MessageBox.Show(User.Login + "/n" + User.Password);
             if (textBox_passwd1.Text == textBox_passwd2.Text)
                 AddUser();
             else

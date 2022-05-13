@@ -148,6 +148,7 @@ namespace Odnogruppniki
             this.Controls.Add(this.label1);
             this.Name = "LogIn";
             this.Text = "Одногруппники";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogIn_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\ClassChat.cs" />
     <Compile Include="Forms\ChatMain.cs">
       <SubType>Form</SubType>
     </Compile>

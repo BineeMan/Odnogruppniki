@@ -11,6 +11,7 @@ using static Odnogruppniki.strCon;
 using static Odnogruppniki.Classes.User;
 using static Odnogruppniki.Classes.UserQueries;
 using Odnogruppniki.Forms;
+using static Odnogruppniki.Classes.Chat;
 
 namespace Odnogruppniki
 {
@@ -20,14 +21,6 @@ namespace Odnogruppniki
         {
             InitializeComponent();
         }
-
-        private int GroupChatId = 0;
-
-        private int IdLastMessage = 0;
-
-        private int CurrentMessagesAmount = 0;
-
-        private string ChatStatus = "";
 
         private void LoadChats()
         {
@@ -53,7 +46,7 @@ namespace Odnogruppniki
             string SqlExpression = "SELECT [ID Message], [ID], [Login], [Message]" +
                 " FROM Odnogruppniki.[Chat Messages]" +
                 " JOIN Odnogruppniki.[User] ON Odnogruppniki.[User].ID = Odnogruppniki.[Chat Messages].[ID Sender]" +
-                " WHERE[ID Group Chat] = " + GroupChatId;
+                " WHERE[ID Group Chat] = " + Chat.GroupChatId;
             using (SqlConnection conn = new SqlConnection(STR_CONN))
             {
                 conn.Open();
@@ -64,7 +57,7 @@ namespace Odnogruppniki
                 {
                     
                     NewIdLastMessage = (int)dataReader["ID Message"];
-                    if (NewIdLastMessage > IdLastMessage)
+                    if (NewIdLastMessage > Chat.IdLastMessage)
                     {
                         string NewLine = Environment.NewLine;
                         textBox_ChatWindow.AppendText(dataReader["Login"] + NewLine + dataReader["Message"]);
@@ -72,7 +65,7 @@ namespace Odnogruppniki
                     }
 
                 }
-                IdLastMessage = NewIdLastMessage;
+                Chat.IdLastMessage = NewIdLastMessage;
             }
         }
 
@@ -88,14 +81,14 @@ namespace Odnogruppniki
                 conn.Open();
                 SqlCommand comm = new SqlCommand(SqlExpression, conn);
                 comm.Parameters.AddWithValue("IdSender", User.IdUser);
-                comm.Parameters.AddWithValue("IdGroupChat", GroupChatId);
+                comm.Parameters.AddWithValue("IdGroupChat", Chat.GroupChatId);
                 comm.Parameters.AddWithValue("Message", message);
                 comm.Parameters.AddWithValue("MessageTime", DT);
                 try
                 {
                     comm.ExecuteNonQuery();
                     IncrementMessageAmount();
-                    CurrentMessagesAmount = GetNewMessagesAmount();
+                    Chat.CurrentMessagesAmount = GetNewMessagesAmount();
                 }
                 catch (Exception error)
                 {
@@ -106,17 +99,22 @@ namespace Odnogruppniki
 
         private void ChatMain_Load(object sender, EventArgs e)
         {
+            Chat.GroupChatId = 0;
+            Chat.IdLastMessage = 0;
+            Chat.CurrentMessagesAmount = 0;
+            Chat.ChatStatus = "";
+
             LoadChats();
             LoadChatStatus();
         }
 
         private void dataGridView_ChatList_SelectionChanged(object sender, EventArgs e)
         {
-            GroupChatId = (int)dataGridView_ChatList.CurrentRow.Cells[0].Value;
-            IdLastMessage = 0;
+            Chat.GroupChatId = (int)dataGridView_ChatList.CurrentRow.Cells[0].Value;
+            Chat.IdLastMessage = 0;
             textBox_ChatWindow.Clear();
             AppendMessages();
-            CurrentMessagesAmount = GetNewMessagesAmount();
+            Chat.CurrentMessagesAmount = GetNewMessagesAmount();
 
             LoadChatStatus();
         }
@@ -132,7 +130,7 @@ namespace Odnogruppniki
         {
             string SqlExpression = "SELECT [Messages Amount] " +
                 "FROM Odnogruppniki.Chat" +
-                " WHERE [ID Group Chat] = " + GroupChatId;
+                " WHERE [ID Group Chat] = " + Chat.GroupChatId;
             int NewMessagesAmount;
             using (SqlConnection conn = new SqlConnection(STR_CONN))
             {
@@ -150,12 +148,12 @@ namespace Odnogruppniki
             string SqlExpression = "UPDATE Odnogruppniki.Chat " +
                 "SET [Messages Amount] = (SELECT[Messages Amount] FROM Odnogruppniki.Chat WHERE[ID Group Chat] = @id) + 1 " +
                 "WHERE [ID Group Chat] = @id";
-            MessageBox.Show(GroupChatId.ToString());
+            MessageBox.Show(Chat.GroupChatId.ToString());
             using (SqlConnection conn = new SqlConnection(STR_CONN))
             {
                 conn.Open();
                 SqlCommand comm = new SqlCommand(SqlExpression, conn);
-                comm.Parameters.AddWithValue("id", GroupChatId);
+                comm.Parameters.AddWithValue("id", Chat.GroupChatId);
                 try
                 {
                     comm.ExecuteNonQuery();
@@ -167,12 +165,12 @@ namespace Odnogruppniki
             }
         } //этот метод инкрементирует количество сообщений в текущем чате. Нужен только при отправке нового сообщения
 
-        private void CheckNewMessagesAmount() //этот метод запускает метод LoadMessages(GroupChatId), если имеются новые сообщения. Нужен только в таймере
+        private void CheckNewMessagesAmount() //этот метод запускает метод LoadMessages(Chat.GroupChatId), если имеются новые сообщения. Нужен только в таймере
         {
             int NewMessagesAmount = GetNewMessagesAmount();
-            if (CurrentMessagesAmount < NewMessagesAmount)
+            if (Chat.CurrentMessagesAmount < NewMessagesAmount)
             {
-                CurrentMessagesAmount = NewMessagesAmount;
+                Chat.CurrentMessagesAmount = NewMessagesAmount;
                 AppendMessages();
             }
         }
@@ -193,7 +191,7 @@ namespace Odnogruppniki
                 " ON Odnogruppniki.[User].[ID State] = Odnogruppniki.[States].[ID State]" +
                 " JOIN Odnogruppniki.Chat" +
                 " ON Odnogruppniki.Chat.[ID Group Chat] = Odnogruppniki.[Chat Members].[ID Group Chat]" +
-                " WHERE Chat.[ID Group Chat] = " + GroupChatId;
+                " WHERE Chat.[ID Group Chat] = " + Chat.GroupChatId;
             using (SqlConnection conn = new SqlConnection(STR_CONN))
             {
                 conn.Open();
